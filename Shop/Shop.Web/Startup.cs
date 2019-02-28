@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shop.Web.Data;
 using Shop.Web.Data.Entities;
+using Shop.Web.Helpers;
 
 namespace Shop.Web
 {
@@ -53,6 +54,7 @@ namespace Shop.Web
             //inyeccion queda permanente durante la ejecucion y sea rehusada en toda la applicacion.
             services.AddScoped<IRepository, Repository>();
 
+            services.AddScoped<IUserHelper, UserHelper>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
