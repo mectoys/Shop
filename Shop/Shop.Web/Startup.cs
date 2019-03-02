@@ -52,7 +52,9 @@ namespace Shop.Web
             services.AddTransient<SeedDb>();
 
             //inyeccion queda permanente durante la ejecucion y sea rehusada en toda la applicacion.
-            services.AddScoped<IRepository, Repository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+
+            services.AddScoped<ICountryRepository, CountryRepository>();
 
             services.AddScoped<IUserHelper, UserHelper>();
 
