@@ -4,6 +4,7 @@ namespace Shop.Web.Controllers
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using Data;
     using Data.Entities;
@@ -27,7 +28,8 @@ namespace Shop.Web.Controllers
         // GET: Products
         public IActionResult Index()
         {
-            return View(this.productRepository.GetAll());
+            //aca ordenamos
+            return View(this.productRepository.GetAll().OrderBy(p=> p.Name));
         }
 
         // GET: Products/Details/5
@@ -119,25 +121,61 @@ namespace Shop.Web.Controllers
                 return NotFound();
             }
 
-            return View(product);
+            var view = this.ToProductViewModel(product);
+            return View(view);
         }
+        private ProductViewModel ToProductViewModel(Product product)
+        {
+            return new ProductViewModel
+            {
+                Id = product.Id,
+                ImageUrl = product.ImageUrl,
+                IsAvailabe = product.IsAvailabe,
+                LastPurchase = product.LastPurchase,
+                LastSale = product.LastSale,
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock,
+                User = product.User
 
+            };
+        }
         // POST: Products/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Product product)
+        public async Task<IActionResult> Edit(ProductViewModel view)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    //si hubo foto
+                    var path = view.ImageUrl;
+
+                    if (view.ImageFile != null && view.ImageFile.Length > 0)
+                    {
+                        path = Path.Combine(
+                            Directory.GetCurrentDirectory(),
+                            "wwwroot\\images\\Products",
+                            view.ImageFile.FileName);
+
+                        using (var stream = new FileStream(path, FileMode.Create))
+                        {
+                            await view.ImageFile.CopyToAsync(stream);
+                        }
+
+                        path = $"~/images/Products/{view.ImageFile.FileName}";
+                    }
+
+                    var product = this.ToProduct(view, path);
+
                     // TODO: Pending to change to: this.User.Identity.Name
                     product.User = await this.userHelper.GetUserByEmailAsync("mectoys2013@gmail.com");
                     await this.productRepository.UpdateAsync(product);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await this.productRepository.ExistAsync(product.Id))
+                    if (!await this.productRepository.ExistAsync(view.Id))
                     {
                         return NotFound();
                     }
@@ -147,10 +185,12 @@ namespace Shop.Web.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            }
+            }                     
 
-            return View(product);
+            return View(view);
         }
+
+     
 
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)

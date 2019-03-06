@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿
 namespace Shop.Web.Data
 {
+    using System.Linq;
     using Entities;
 
     public interface IProductRepository : IGenericRepository<Product>
     {
+        IQueryable GetAllWithUsers();
     }
+
 }
