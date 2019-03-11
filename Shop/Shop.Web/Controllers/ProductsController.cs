@@ -14,7 +14,7 @@ namespace Shop.Web.Controllers
     using Microsoft.EntityFrameworkCore;
     using Shop.Web.Models;
 
-    [Authorize]
+  
     public class ProductsController : Controller
 
     {
@@ -29,6 +29,7 @@ namespace Shop.Web.Controllers
         }
 
         // GET: Products
+        
         public IActionResult Index()
         {
             //aca ordenamos
@@ -53,6 +54,7 @@ namespace Shop.Web.Controllers
         }
 
         // GET: Products/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -113,6 +115,7 @@ namespace Shop.Web.Controllers
             }
 
         // GET: Products/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -198,9 +201,10 @@ namespace Shop.Web.Controllers
             return View(view);
         }
 
-     
+
 
         // GET: Products/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
