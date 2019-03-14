@@ -11,6 +11,12 @@ namespace Shop.Web.Data
     {
         //Donet 
         public DbSet<Product> Products{ get; set; }
+        //modelo en singular y la coleccion en plural
+        public DbSet<Order> Orders { get; set; }
+
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+
+        public DbSet<OrderDetailTemp> OrderDetailTemps { get; set; }
 
         public DbSet<Country> Countries { get; set; }
 
