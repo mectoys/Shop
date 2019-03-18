@@ -8,6 +8,7 @@ namespace Shop.Web.Data.Repositories
     using Microsoft.EntityFrameworkCore;
     using Shop.Web.Helpers;
     using Shop.Web.Models;
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Web.Data.Entities;
@@ -34,7 +35,8 @@ namespace Shop.Web.Data.Repositories
             {
                 //equivalente al inner join es el Include
                 return this.context.Orders
-                    .Include(o => o.Items)
+                    .Include(o => o.User)
+                    .Include(o => o.Items)                    
                     .ThenInclude(i => i.Product)
                     .OrderByDescending(o => o.OrderDate);
             }
@@ -124,6 +126,43 @@ namespace Shop.Web.Data.Repositories
             await this.context.SaveChangesAsync();
         }
 
+        public async Task<bool> ConfirmOrderAsync(string userName)
+        {
+            var user = await this.userHelper.GetUserByEmailAsync(userName);
+            if (user == null)
+            {
+                return false;
+            }
+
+            var orderTmps = await this.context.OrderDetailTemps
+                .Include(o => o.Product)
+                .Where(o => o.User == user)
+                .ToListAsync();
+
+            if (orderTmps == null || orderTmps.Count == 0)
+            {
+                return false;
+            }
+
+            var details = orderTmps.Select(o => new OrderDetail
+            {
+                Price = o.Price,
+                Product = o.Product,
+                Quantity = o.Quantity
+            }).ToList();
+
+            var order = new Order
+            {
+                OrderDate = DateTime.UtcNow,
+                User = user,
+                Items = details,
+            };
+
+            this.context.Orders.Add(order);
+            this.context.OrderDetailTemps.RemoveRange(orderTmps);
+            await this.context.SaveChangesAsync();
+            return true;
+        }
 
     }
 }
