@@ -6,7 +6,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using System.Collections.Generic;
 
     public class SeedDb
     {
@@ -28,6 +28,24 @@
             await this.userHelper.CheckRoleAsync("Admin");
             await this.userHelper.CheckRoleAsync("Customer");
 
+            if (!this.context.Countries.Any())
+            {
+                var cities = new List<City>();
+                cities.Add(new City { Name = "Trujillo" });
+                cities.Add(new City { Name = "Lima" });
+                cities.Add(new City { Name = "Arequipa" });
+
+                this.context.Countries.Add(new Country
+                {
+                    Cities = cities,
+                    Name = "Perú"
+                });
+
+                await this.context.SaveChangesAsync();
+            }
+
+
+
             var user = await this.userHelper.GetUserByEmailAsync("mectoy2013@gmail.com");
 
             if (user == null)
@@ -37,7 +55,12 @@
                     FirstName =     "Jose",
                     LastName =      "Ponciano",
                     Email =             "mectoy2013@gmail.com",
-                    UserName = "mectoy2013@gmail.com"
+                    UserName = "mectoy2013@gmail.com",
+                    Address = "Calle Luna Calle Sol",
+                    PhoneNumber = "350 634 2747",
+                    CityId = this.context.Countries.FirstOrDefault().Cities.FirstOrDefault().Id,
+                    City = this.context.Countries.FirstOrDefault().Cities.FirstOrDefault()
+
                 };
 
                 var result = await this.userHelper.AddUserAsync(user, "123456");

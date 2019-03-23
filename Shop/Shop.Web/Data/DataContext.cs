@@ -14,6 +14,7 @@ namespace Shop.Web.Data
         //modelo en singular y la coleccion en plural
         public DbSet<Order> Orders { get; set; }
 
+        public DbSet<City> Cities { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
 
         public DbSet<OrderDetailTemp> OrderDetailTemps { get; set; }

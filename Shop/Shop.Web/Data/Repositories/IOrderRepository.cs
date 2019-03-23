@@ -9,7 +9,7 @@ namespace Shop.Web.Data.Repositories
 
     public interface IOrderRepository : IGenericRepository<Order>
     {
-        Task<IQueryable<Order>> GetOrdersAsync(string userName);
+       
 
         Task<IQueryable<OrderDetailTemp>> GetDetailTempsAsync(string userName);
 
@@ -20,6 +20,12 @@ namespace Shop.Web.Data.Repositories
         Task DeleteDetailTempAsync(int id);
 
         Task<bool> ConfirmOrderAsync(string userName);
+
+        Task DeliverOrder(DeliverViewModel model);
+
+        Task<IQueryable<Order>> GetOrdersAsync(string userName);
+        Task<Order> GetOrdersAsync(int id);
+
     }
 
 }
